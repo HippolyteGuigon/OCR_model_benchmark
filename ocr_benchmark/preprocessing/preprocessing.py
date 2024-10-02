@@ -2,12 +2,13 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from PIL import Image
+from typing import Union, List 
 
 from transformers import LayoutLMv2Processor
 from ocr_benchmark.utils.data_loading import load_data
 
 
-def image_preprocessing(image_index: int, **kwargs):
+def image_preprocessing(image_index: int, **kwargs)->Union[LayoutLMv2Processor, List[str]]:
 
     if "dataset" not in kwargs.items():
         dataset=load_data()
@@ -19,9 +20,11 @@ def image_preprocessing(image_index: int, **kwargs):
     boxes = dataset['test'][5]['bboxes']  
     labels = dataset['test'][5]['ner_tags']
 
+    image_info=[image_path, annotations, boxes, labels]
+
     image = Image.open(image_path)
     image = image.convert("RGB")
 
     encoding = processor(image, annotations, boxes=boxes, return_tensors="pt")
     
-    return encoding
+    return encoding, image_info
