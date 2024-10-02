@@ -1,5 +1,8 @@
 # OCR_model_benchmark
-The goal of this repository is to benchmark the most recent and popular OCR algorithms 
+
+The goal of this repository is to benchmark the most recent and popular OCR algorithms. 
+
+These models will be tested on the FUNSD Dataset (https://guillaumejaume.github.io/FUNSD/) and benchmarked on the obtained metrics
 
 ## Build Status
 
@@ -29,5 +32,6 @@ The all project was coded under PEP-8 (https://peps.python.org/pep-0008/) and fl
 
 ![alt text](https://github.com/HippolyteGuigon/OCR_model_benchmark/blob/main/ressources/FUNSDpng.png)
 
+Result of LayoutLM on a FUNSD document
 
 ## How to use ?
