@@ -1,23 +1,18 @@
 import torch
 
-from transformers import LayoutLMTokenizer, LayoutLMForTokenClassification
-from transformers import pipeline
+from transformers import LayoutLMv2ForTokenClassification
 
+id2label = {0: "O", 1: "B-HEADER", 2: "I-HEADER", 3: "B-QUESTION", 4: "I-QUESTION", 5: "B-ANSWER", 6: "I-ANSWER"}
 
-def predict(layoutlm_inputs)->torch.Tensor:
-    
-    model = LayoutLMForTokenClassification.from_pretrained("microsoft/layoutlm-base-uncased")
+def predict(encoding, **kwargs):
 
-    model.eval()
+    if "model" not in kwargs.keys():
+       model = LayoutLMv2ForTokenClassification.from_pretrained("microsoft/layoutlmv2-base-uncased", num_labels=7)
 
     with torch.no_grad():
-        outputs = model(
-            input_ids=layoutlm_inputs["input_ids"],
-            attention_mask=layoutlm_inputs["attention_mask"],
-            bbox=layoutlm_inputs["bbox"]
-        )
+     outputs = model(**encoding)
 
     logits = outputs.logits
-    predictions = torch.argmax(logits, dim=-1)
+    predictions = torch.argmax(logits, dim=2)
 
     return predictions
