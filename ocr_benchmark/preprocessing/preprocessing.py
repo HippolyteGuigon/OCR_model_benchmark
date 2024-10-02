@@ -8,7 +8,26 @@ from transformers import LayoutLMv2Processor
 from ocr_benchmark.utils.data_loading import load_data
 
 
-def image_preprocessing(image_index: int, **kwargs)->Union[LayoutLMv2Processor, List[str]]:
+def image_preprocessing(image_index: int, **kwargs) -> Union[LayoutLMv2Processor, List[str]]:
+    """
+    The purpose of this function is to preprocess an image from the dataset
+    and return the necessary encoding and related image information
+    for the LayoutLMv2 model.
+
+    Arguments:
+        - image_index: int: The index of the image in the dataset to process.
+        - **kwargs: optional keyword arguments:
+            - dataset: a preloaded dataset (if not provided, it loads via load_data()).
+            - processor: a preloaded LayoutLMv2Processor (if not provided, it uses a pre-trained processor).
+
+    Returns:
+        - encoding: LayoutLMv2Processor: The encoded representation of the image and associated annotations, including bounding boxes.
+        - image_info: List[str]: A list containing the image path, annotations, bounding boxes, and labels.
+
+    Notes:
+        - If a dataset or processor is not provided via `kwargs`, they will be initialized within the function.
+        - The image is automatically converted to RGB format for compatibility with LayoutLMv2.
+    """
 
     if "dataset" not in kwargs.items():
         dataset=load_data()
