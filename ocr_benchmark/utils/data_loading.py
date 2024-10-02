@@ -12,6 +12,6 @@ def load_data() -> DatasetDict:
         dataset once loaded
     """
 
-    dataset = load_dataset("nielsr/funsd")
+    dataset = load_dataset("nielsr/funsd", trust_remote_code=True)
 
     return dataset
