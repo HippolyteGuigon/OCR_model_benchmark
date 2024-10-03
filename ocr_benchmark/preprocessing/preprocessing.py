@@ -5,6 +5,7 @@ from PIL import Image
 from typing import Union, List
 
 from transformers import LayoutLMv2Processor
+from transformers import DonutProcessor
 from ocr_benchmark.utils.data_loading import load_data
 
 warnings.filterwarnings("ignore")
@@ -74,3 +75,15 @@ def image_preprocessing(
     encoding["labels"] = torch.tensor(aligned_labels)
 
     return encoding, image_info
+
+
+def image_preprocessing_donut(image_path: str):
+    """
+    Préparer une image pour Donut.
+    """
+
+    processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
+    image = Image.open(image_path).convert("RGB")
+
+    pixel_values = processor(image, return_tensors="pt").pixel_values
+    return pixel_values
