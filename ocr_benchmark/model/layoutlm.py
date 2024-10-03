@@ -34,7 +34,7 @@ def predict(encoding: Dict[str, Any], **kwargs) -> torch.Tensor:
 
     if "model" not in kwargs.keys():
         model = LayoutLMv2ForTokenClassification.from_pretrained(
-            "microsoft/layoutlmv2-base-uncased", num_labels=7
+            "nielsr/layoutlmv2-finetuned-funsd", num_labels=7
         )
 
     with torch.no_grad():
