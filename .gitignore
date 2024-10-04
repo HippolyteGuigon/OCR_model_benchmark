@@ -1,6 +1,7 @@
 #Excluded files
 
-*.ipynb  
+*.ipynb
+logs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
