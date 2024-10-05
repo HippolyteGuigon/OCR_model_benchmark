@@ -7,6 +7,8 @@ from ocr_benchmark.utils.data_loading import load_data
 from ocr_benchmark.preprocessing.preprocessing import image_preprocessing
 from ocr_benchmark.model.layoutlm import predict
 
+from transformers import LayoutLMv2ForTokenClassification
+
 
 def evaluate(predictions, true_labels) -> pd.DataFrame:
     """
@@ -70,6 +72,10 @@ def full_evaluation(**kwargs) -> pd.DataFrame:
 
     if "model" in kwargs.keys():
         model = kwargs["model"]
+    else:
+        model = model = LayoutLMv2ForTokenClassification.from_pretrained(
+            "nielsr/layoutlmv2-base-uncased", num_labels=7
+        )
 
     dataset = load_data()
     test_set = dataset["test"]
