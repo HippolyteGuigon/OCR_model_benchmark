@@ -74,7 +74,7 @@ def full_evaluation(**kwargs) -> pd.DataFrame:
         model = kwargs["model"]
     else:
         model = model = LayoutLMv2ForTokenClassification.from_pretrained(
-            "nielsr/layoutlmv2-base-uncased", num_labels=7
+            "microsoft/layoutlmv2-base-uncased", num_labels=7
         )
 
     dataset = load_data()
