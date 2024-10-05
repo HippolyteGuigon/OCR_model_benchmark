@@ -4,17 +4,21 @@ import warnings
 from PIL import Image
 from typing import Union, List
 
-from transformers import LayoutLMv2Processor
+from transformers import LayoutLMv2Processor, LayoutLMTokenizer
 from transformers import DonutProcessor
 from ocr_benchmark.utils.data_loading import load_data
 
 warnings.filterwarnings("ignore")
 
+tokenizer = LayoutLMTokenizer.from_pretrained(
+    "microsoft/layoutlm-base-uncased"
+)
+
 
 def align_labels_with_tokens(labels, word_ids):
     """
     Align the word-level labels with the token-level
-    abels after tokenization. Each word might be split
+    labels after tokenization. Each word might be split
     into multiple tokens, and we need to duplicate the
     labels accordingly.
 
@@ -87,3 +91,41 @@ def image_preprocessing_donut(image_path: str):
 
     pixel_values = processor(image, return_tensors="pt").pixel_values
     return pixel_values
+
+
+processor = LayoutLMv2Processor.from_pretrained(
+    "microsoft/layoutlmv2-base-uncased", apply_ocr=False
+)
+
+
+def preprocess_funsd(example):
+    image_path = example["image_path"]
+    image = Image.open(image_path).convert("RGB")
+    words = example["words"]
+    boxes = example["bboxes"]
+    labels = example["ner_tags"]
+
+    # Appliquer la tokenisation et l'encodage LayoutLMv2
+    encoding = processor(
+        image,
+        words,
+        boxes=boxes,
+        return_tensors="pt",
+        truncation=True,
+        padding="max_length",
+        max_length=512,
+    )
+
+    # Inclure l'image dans l'encodage avec la clé 'image'
+    encoding["image"] = processor.feature_extractor(
+        images=image, return_tensors="pt"
+    )["pixel_values"]
+
+    # Aligner les labels sur les tokens
+    word_ids = encoding.word_ids()
+    aligned_labels = align_labels_with_tokens(labels, word_ids)
+    encoding["labels"] = torch.tensor(aligned_labels)
+
+    return {
+        key: val.squeeze(0) for key, val in encoding.items()
+    }  # Squeeze pour obtenir des dimensions correctes

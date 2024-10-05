@@ -7,6 +7,8 @@ from ocr_benchmark.utils.data_loading import load_data
 from ocr_benchmark.preprocessing.preprocessing import image_preprocessing
 from ocr_benchmark.model.layoutlm import predict
 
+from transformers import LayoutLMv2ForTokenClassification
+
 
 def evaluate(predictions, true_labels) -> pd.DataFrame:
     """
@@ -54,7 +56,7 @@ def evaluate(predictions, true_labels) -> pd.DataFrame:
     return report_df
 
 
-def full_evaluation() -> pd.DataFrame:
+def full_evaluation(**kwargs) -> pd.DataFrame:
     """
     The goal of this function is to
     evaluate the LayoutLM model on the
@@ -68,6 +70,13 @@ def full_evaluation() -> pd.DataFrame:
         evaluation
     """
 
+    if "model" in kwargs.keys():
+        model = kwargs["model"]
+    else:
+        model = model = LayoutLMv2ForTokenClassification.from_pretrained(
+            "microsoft/layoutlmv2-base-uncased", num_labels=7
+        )
+
     dataset = load_data()
     test_set = dataset["test"]
 
@@ -77,7 +86,7 @@ def full_evaluation() -> pd.DataFrame:
     for image_index in tqdm(range(len(test_set))):
         try:
             encoding, info = image_preprocessing(image_index=image_index)
-            prediction = predict(encoding=encoding)
+            prediction = predict(encoding=encoding, model=model)
 
             _, _, _, true_labels = info
         except RuntimeError:
